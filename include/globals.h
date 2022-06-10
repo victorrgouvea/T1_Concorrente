@@ -67,4 +67,16 @@ extern void globals_set_buffets(buffet_t *buffets_ref);
  */
 extern buffet_t *globals_get_buffets();
 
+// Inicia o numero de alunos
+extern void globals_set_num_buffets(int number);
+
+// Retorna o numero de alunos
+extern int globals_get_num_buffets();
+
+// Armazena o id do estudante que passa pela catraca
+extern void globals_set_id_estudante_entrada(int number);
+
+// Retorna o id do estudante que passa pela catraca
+extern int globals_get_id_estudante_entrada();
+
 #endif

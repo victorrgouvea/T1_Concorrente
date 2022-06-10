@@ -3,18 +3,26 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <semaphore.h>
 
 #include "student.h"
 #include "config.h"
 #include "worker_gate.h"
 #include "globals.h"
 #include "table.h"
+#include "queue.h"
 
 void* student_run(void *arg)
 {
     student_t *self = (student_t*) arg;
     table_t *tables  = globals_get_table();
+    queue_t *queue = globals_get_queue();
 
+    queue_insert(queue, self); // insere o estudante na fila
+    
+    /* Fica no loop até que seja retirado da fila */
+    while (globals_get_id_estudante_entrada() != self->_id) {}
+    
     worker_gate_insert_queue_buffet(self);
     student_serve(self);
     student_seat(self, tables);

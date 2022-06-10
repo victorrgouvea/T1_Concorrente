@@ -6,6 +6,8 @@ table_t *table = NULL;
 buffet_t *buffets_ref = NULL;
 
 int students_number = 0;
+int buffets_number = 0;
+int id_estudante_entrada = 0;
 
 void globals_set_queue(queue_t *queue)
 {
@@ -48,6 +50,25 @@ buffet_t *globals_get_buffets()
     return buffets_ref;
 }
 
+void globals_set_num_buffets(int number)
+{
+    buffets_number = number;
+}
+
+int globals_get_num_buffets()
+{
+    return buffets_number;
+}
+
+void globals_set_id_estudante_entrada(int number)
+{
+    id_estudante_entrada = number;
+}
+
+int globals_get_id_estudante_entrada()
+{
+    return id_estudante_entrada;
+}
 
 /**
  * @brief Finaliza todas as variáveis globais que ainda não foram liberadas.
