@@ -15,6 +15,7 @@ typedef struct buffet
     int queue_right[5];
     
     pthread_t thread; /* Thread do buffet   */
+    pthread_mutex_t mutex_meal[5]; /* Mutex para cada comida */
 } buffet_t;
 
 /**

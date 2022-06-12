@@ -54,10 +54,11 @@ void student_serve(student_t *self)
         
         /* Caso queria aquela comida, se serve dela */
         if (self->_wishes[self->_buffet_position] == 1) {
-            // MUTEX ??
+            // Espera a reposicao caso nao tenha comida
             while (!buffet._meal[self->_buffet_position]) {} // Espera a reposicao caso nao tenha comida
+            pthread_mutex_lock(&(buffet.mutex_meal[self->_buffet_position]));
             --buffet._meal[self->_buffet_position];  // Pega a comida
-            // MUTEX ??
+            pthread_mutex_unlock(&(buffet.mutex_meal[self->_buffet_position]));
         }
         if (self->left_or_right == "L") {
             // Espera ate a proxima posicao da fila ser liberada
