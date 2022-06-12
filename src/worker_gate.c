@@ -57,6 +57,8 @@ void *worker_gate_run(void *arg)
 {
     int all_students_entered;
     int number_students;
+    int buffet_livre;
+    int id_estudante;
 
     number_students = *((int *)arg);
     all_students_entered = number_students > 0 ? FALSE : TRUE;
