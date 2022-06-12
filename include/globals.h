@@ -79,4 +79,16 @@ extern void globals_set_id_estudante_entrada(int number);
 // Retorna o id do estudante que passa pela catraca
 extern int globals_get_id_estudante_entrada();
 
+// Armazena o número total de mesas
+extern void globals_set_tables_number(int number);
+
+// Retorna o número total de mesas
+extern int globals_get_tables_number();
+
+// Armazena o numero de assentos por mesa
+extern void globals_set_seats_per_table(int number);
+
+// Retorna o numero de assentos por mesa
+extern int globals_get_seats_per_table();
+
 #endif

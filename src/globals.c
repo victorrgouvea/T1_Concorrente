@@ -8,6 +8,8 @@ buffet_t *buffets_ref = NULL;
 int students_number = 0;
 int buffets_number = 0;
 int id_estudante_entrada = 0;
+int tables_number = 0;
+int seats_per_table = 0;
 
 void globals_set_queue(queue_t *queue)
 {
@@ -68,6 +70,26 @@ void globals_set_id_estudante_entrada(int number)
 int globals_get_id_estudante_entrada()
 {
     return id_estudante_entrada;
+}
+
+void globals_set_tables_number(int number)
+{
+    tables_number = number;
+}
+
+int globals_get_tables_number()
+{
+    return tables_number;
+}
+
+void globals_set_seats_per_table(int number)
+{
+    seats_per_table = number;
+}
+
+int globals_get_seats_per_table()
+{
+    return seats_per_table;
 }
 
 /**
