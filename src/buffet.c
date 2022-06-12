@@ -94,6 +94,20 @@ void buffet_next_step(buffet_t *self, student_t *student)
             student->_buffet_position = student->_buffet_position + 1;
         }
     }
+    else /* Caso esteja na ultima posicao do buffet */
+    {
+        if (student->left_or_right == 'L')
+        {   /* Zera a ultima posicao e sai do buffet*/
+            int position = student->_buffet_position;
+            self[student->_id_buffet].queue_left[position] = 0;
+            student->_buffet_position = student->_buffet_position + 1;
+        }else /* Está na fila direita? */
+        {   /* Zera a ultima posicao e sai do buffet*/
+            int position = student->_buffet_position;
+            self[student->_id_buffet].queue_right[position] = 0;
+            student->_buffet_position = student->_buffet_position + 1;
+        }
+    }
 }
 
 /* --------------------------------------------------------- */

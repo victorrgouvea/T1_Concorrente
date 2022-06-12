@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <semaphore.h>
+#include <pthread.h> 
 
 #include "student.h"
 #include "config.h"
@@ -11,6 +12,7 @@
 #include "globals.h"
 #include "table.h"
 #include "queue.h"
+#include "buffet.h"
 
 void* student_run(void *arg)
 {
@@ -34,12 +36,49 @@ void* student_run(void *arg)
 void student_seat(student_t *self, table_t *table)
 {
     /* Insira sua lógica aqui */
+    table_t *mesas = globals_get_table();
+
 }
 
 void student_serve(student_t *self)
 {
-    /* Insira sua lógica aqui */
+    /*
+    INCOMPLETA
+    Falta ver os mutex
+    */
+    buffet_t *lista_buffet = globals_get_buffets();
+    buffet_t buffet = lista_buffet[self->_id_buffet];
+
+    /* posicao = 5 indica que saiu do buffet */
+    while (self->_buffet_position < 5) {
+        
+        /* Caso queria aquela comida, se serve dela */
+        if (self->_wishes[self->_buffet_position] == 1) {
+            // MUTEX ??
+            while (!buffet._meal[self->_buffet_position]) {} // Espera a reposicao caso nao tenha comida
+            --buffet._meal[self->_buffet_position];  // Pega a comida
+            // MUTEX ??
+        }
+        if (self->left_or_right == "L") {
+            // Espera ate a proxima posicao da fila ser liberada
+            while (buffet.queue_left[(self->_buffet_position)+1]) {}
+            // Talvez alguma solucao com semaforo aqui??
+        } 
+        else if (self->left_or_right == "R") {
+            // Espera ate a proxima posicao da fila ser liberada
+            while (buffet.queue_right[(self->_buffet_position)+1]) {}
+            // Talvez alguma solucao com semaforo aqui??
+        }
+        buffet_next_step(lista_buffet, self);
+    }
 }
+/* 
+esta na fila?
+verifica se quer a comida daquela posicao ou nao. se nao quiser, passa p/ a prox.
+caso queira, verifica se tem. se tiver, pega. se nao tiver, espera
+depois de pegar a comida, passa para a proxima posicao
+quando passar da ultima posicao, vai sentar para comer
+*/
 
 void student_leave(student_t *self, table_t *table)
 {

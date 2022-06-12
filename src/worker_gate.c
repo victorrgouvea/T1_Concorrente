@@ -69,7 +69,7 @@ void *worker_gate_run(void *arg)
             /* Deixa um estudante passar pela catraca e salva o seu id */
             sem_wait(&catraca);
             id_estudante = worker_gate_remove_student();
-            globals_set_id_estudante_entrada = id_estudante
+            globals_set_id_estudante_entrada(id_estudante);
         }
         msleep(5000); /* Pode retirar este sleep quando implementar a solução! */
     }
