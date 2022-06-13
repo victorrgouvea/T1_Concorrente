@@ -1,11 +1,14 @@
 #ifndef __TABLE_H__
 #define __TABLE_H__
 
+#include <pthread.h>
+
 typedef struct table_t
 {
         int _id;                         /* ID da mesa */
         int _empty_seats;               /* Quantidade de lugares vazios */
         int _max_seats;                 /* Capacidade máxima de cada mesa*/
+        pthread_mutex_t mutex_table;    /* Mutex de cada mesa */
 } table_t; 
 
 /**

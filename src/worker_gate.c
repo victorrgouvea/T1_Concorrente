@@ -6,6 +6,7 @@
 #include "config.h"
 #include "queue.h"
 #include "student.h"
+#include "table.h"
 
 sem_t catraca;
 
@@ -82,6 +83,9 @@ void *worker_gate_run(void *arg)
 void worker_gate_init(worker_gate_t *self)
 {
     int number_students = globals_get_students();
+    table_t *mesas = globals_get_table();
+    // Lugar que encontrei para fazer o init dos mutex das mesas
+    tables_mutex_init(mesas);
     sem_init(&catraca, 0, 1);
     pthread_create(&self->thread, NULL, worker_gate_run, &number_students);
 }
@@ -91,6 +95,9 @@ void worker_gate_finalize(worker_gate_t *self)
     pthread_join(self->thread, NULL);
     sem_destroy(&catraca);
     free(self);
+    // Como o worker gate é o ultimo a finalizar,
+    // finalizo as globais aqui também
+    globals_finalize();
 }
 
 void worker_gate_insert_queue_buffet(student_t *student)

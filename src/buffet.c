@@ -20,6 +20,10 @@ void *buffet_run(void *arg)
         msleep(5000); /* Pode retirar este sleep quando implementar a solução! */
     }
 
+    // Apos terminar, cada buffet faz o destroy dos seus mutex
+    for (int j = 0; j < 5; j++) {
+        pthread_mutex_destroy(&(self->mutex_meal[j]));
+    }
     pthread_exit(NULL);
 }
 

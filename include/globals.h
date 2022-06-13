@@ -91,4 +91,13 @@ extern void globals_set_seats_per_table(int number);
 // Retorna o numero de assentos por mesa
 extern int globals_get_seats_per_table();
 
+// Init dos mutex das mesas
+extern void tables_mutex_init(table_t *t);
+
+// Destroy dos mutex das mesas
+extern void tables_mutex_destroy(table_t *t);
+
+// Destroy dos mutex do buffet
+//extern void buffet_mutex_destroy(buffet_t *b);
+
 #endif

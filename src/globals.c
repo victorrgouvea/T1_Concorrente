@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <semaphore.h>
+#include <pthread.h>
 #include "globals.h"
 
 queue_t *students_queue = NULL;
@@ -92,6 +94,29 @@ int globals_get_seats_per_table()
     return seats_per_table;
 }
 
+void tables_mutex_init(table_t *t)
+{
+    for (int i = 0; i < tables_number; i++) {
+        pthread_mutex_init(&(t[i].mutex_table), NULL);
+    }
+}
+
+void tables_mutex_destroy(table_t *t)
+{
+    for (int i = 0; i < tables_number; i++) {
+        pthread_mutex_destroy(&(t[i].mutex_table));
+    }
+}
+
+/*void buffet_mutex_destroy(buffet_t *b)
+{
+    for (int i = 0; i < buffets_number; i++) {
+        for (int j = 0; j < 5; i++) {
+            pthread_mutex_destroy(&(b[i].mutex_meal[j]));
+        }
+    }
+}*/
+
 /**
  * @brief Finaliza todas as variáveis globais que ainda não foram liberadas.
  *  Se criar alguma variável global que faça uso de mallocs, lembre-se sempre de usar o free dentro
@@ -99,5 +124,6 @@ int globals_get_seats_per_table()
  */
 void globals_finalize()
 {
+    tables_mutex_destroy(table);
     free(table);
 }

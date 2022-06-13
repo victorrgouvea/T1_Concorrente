@@ -19,13 +19,21 @@ void* student_run(void *arg)
     student_t *self = (student_t*) arg;
     table_t *tables  = globals_get_table();
     queue_t *queue = globals_get_queue();
+    //buffet_t *b = globals_get_buffets();
 
     queue_insert(queue, self); // insere o estudante na fila
-    
+
     /* Fica no loop até que seja retirado da fila */
     while (globals_get_id_estudante_entrada() != self->_id) {}
-    
+    printf("passou\n");
     worker_gate_insert_queue_buffet(self);
+    // prints pra debug
+    /*printf("%d\n", self->_id);
+    printf("%d\n", self->left_or_right);
+    printf("%d\n", self->_id_buffet);
+    printf("%d\n", self->_buffet_position);
+    printf("%d\n", b[self->_id_buffet].queue_left[0]);
+    printf("%d\n", b[self->_id_buffet].queue_right[0]);*/
     student_serve(self);
     student_seat(self, tables);
     student_leave(self, tables);
@@ -45,10 +53,10 @@ void student_seat(student_t *self, table_t *table)
     int achou = 0;
     while (!achou) {
         for (int i = 0; i < num_mesas; i++) {
-            // MUTEX LOCK
+            pthread_mutex_lock(&(table[i].mutex_table));
             if (table[i]._empty_seats > 0) {
                 table[i]._empty_seats--;
-                // MUTEX UNLOCK
+                pthread_mutex_unlock(&(table[i].mutex_table));
                 // Armazeno o id da mesa que o estudante sentou
                 // em id_buffet, ja que nao esta mais sendo usado
                 self->_id_buffet = table[i]._id;
@@ -80,12 +88,12 @@ void student_serve(student_t *self)
             --buffet._meal[self->_buffet_position];  // Pega a comida
             pthread_mutex_unlock(&(buffet.mutex_meal[self->_buffet_position]));
         }
-        if (self->left_or_right == 'L') {
+        if (self->left_or_right == 'L' && self->_buffet_position < 4) {
             // Espera ate a proxima posicao da fila ser liberada
             while (buffet.queue_left[(self->_buffet_position)+1]) {}
             // Talvez alguma solucao com semaforo aqui??
         } 
-        else if (self->left_or_right == 'R') {
+        else if (self->left_or_right == 'R' && self->_buffet_position < 4) {
             // Espera ate a proxima posicao da fila ser liberada
             while (buffet.queue_right[(self->_buffet_position)+1]) {}
             // Talvez alguma solucao com semaforo aqui??
@@ -108,9 +116,9 @@ void student_leave(student_t *self, table_t *table)
     */
     msleep(5000); // Tempo que o estudante esta comendo
 
-    // MUTEX LOCK
+    pthread_mutex_lock(&(table[self->_id_buffet].mutex_table));
     (table[self->_id_buffet]._empty_seats)++;
-    // MUTEX UNLOCK
+    pthread_mutex_unlock(&(table[self->_id_buffet].mutex_table));
 }
 
 /* --------------------------------------------------------- */
