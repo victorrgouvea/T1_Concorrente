@@ -45,9 +45,8 @@ int worker_gate_look_buffet()
     int num_buffets = globals_get_num_buffets();
     int buffet_livre = -1;
     for (int i = 0; i < num_buffets; i++) {
-        buffet_t buffet = lista_buffet[i];
-        if (!buffet.queue_left[0] || !buffet.queue_right[0]) {
-            buffet_livre = buffet._id;
+        if (!lista_buffet[i].queue_left[0] || !lista_buffet[i].queue_right[0]) {
+            buffet_livre = lista_buffet[i]._id;
             break;
         }
     }
@@ -110,14 +109,13 @@ void worker_gate_insert_queue_buffet(student_t *student)
     buffet_t *lista_buffet = globals_get_buffets();
     int num_buffets = globals_get_num_buffets();
     for (int i = 0; i < num_buffets; i++) {
-        buffet_t buffet = lista_buffet[i];
-        if (!buffet.queue_left[0]) {
+        if (!lista_buffet[i].queue_left[0]) {
             student->left_or_right = 'L';
-            student->_id_buffet = buffet._id;
+            student->_id_buffet = lista_buffet[i]._id;
             break;
-        } else if (!buffet.queue_right[0]) {
+        } else if (!lista_buffet[i].queue_right[0]) {
             student->left_or_right = 'R';
-            student->_id_buffet = buffet._id;
+            student->_id_buffet = lista_buffet[i]._id;
             break;
         }
     }
