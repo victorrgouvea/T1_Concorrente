@@ -105,11 +105,11 @@ void worker_gate_insert_queue_buffet(student_t *student)
     for (int i = 0; i < num_buffets; i++) {
         buffet_t buffet = lista_buffet[i];
         if (!buffet.queue_left[0]) {
-            student->left_or_right = "L";
+            student->left_or_right = 'L';
             student->_id_buffet = buffet._id;
             break;
         } else if (!buffet.queue_right[0]) {
-            student->left_or_right = "R";
+            student->left_or_right = 'R';
             student->_id_buffet = buffet._id;
             break;
         }

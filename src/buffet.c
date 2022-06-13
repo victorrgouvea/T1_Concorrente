@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <pthread.h>
 #include "buffet.h"
 #include "config.h"
 #include "globals.h"
@@ -32,11 +33,12 @@ void buffet_init(buffet_t *self, int number_of_buffets)
         self[i]._id = i;
 
         /* Inicia com 40 unidades de comida em cada bacia */
-        for(j = 0; j < 5; j++)
+        for(j = 0; j < 5; j++) {
             self[i]._meal[j] = 40;
             pthread_mutex_init(&(self[i].mutex_meal[j]), NULL);
             // Onde dar destroy nesses mutex ???
-
+        }
+        
         for(j= 0; j< 5; j++){
              /* A fila esquerda do buffet possui cinco posições. */
             self[i].queue_left[j] = 0;

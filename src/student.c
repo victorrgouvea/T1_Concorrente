@@ -35,8 +35,28 @@ void* student_run(void *arg)
 
 void student_seat(student_t *self, table_t *table)
 {
-    /* Insira sua lógica aqui */
-    table_t *mesas = globals_get_table();
+    /*
+    Percorro a lista de mesas até achar uma com um ligar vago
+    Quando achar, decremento um da variável de lugares vagos e
+    armazendo em qual mesa o aluno sentou
+    */
+    int num_mesas = globals_get_tables_number();
+    
+    int achou = 0;
+    while (!achou) {
+        for (int i = 0; i < num_mesas; i++) {
+            // MUTEX LOCK
+            if (table[i]._empty_seats > 0) {
+                table[i]._empty_seats--;
+                // MUTEX UNLOCK
+                // Armazeno o id da mesa que o estudante sentou
+                // em id_buffet, ja que nao esta mais sendo usado
+                self->_id_buffet = table[i]._id;
+                achou = 1;
+                break;
+            }
+        }
+    }
 
 }
 
@@ -60,12 +80,12 @@ void student_serve(student_t *self)
             --buffet._meal[self->_buffet_position];  // Pega a comida
             pthread_mutex_unlock(&(buffet.mutex_meal[self->_buffet_position]));
         }
-        if (self->left_or_right == "L") {
+        if (self->left_or_right == 'L') {
             // Espera ate a proxima posicao da fila ser liberada
             while (buffet.queue_left[(self->_buffet_position)+1]) {}
             // Talvez alguma solucao com semaforo aqui??
         } 
-        else if (self->left_or_right == "R") {
+        else if (self->left_or_right == 'R') {
             // Espera ate a proxima posicao da fila ser liberada
             while (buffet.queue_right[(self->_buffet_position)+1]) {}
             // Talvez alguma solucao com semaforo aqui??
@@ -83,7 +103,14 @@ quando passar da ultima posicao, vai sentar para comer
 
 void student_leave(student_t *self, table_t *table)
 {
-    /* Insira sua lógica aqui */
+    /*
+    Após o estudante terminar de comer, libera um assento da mesa em que ele estava
+    */
+    msleep(5000); // Tempo que o estudante esta comendo
+
+    // MUTEX LOCK
+    (table[self->_id_buffet]._empty_seats)++;
+    // MUTEX UNLOCK
 }
 
 /* --------------------------------------------------------- */

@@ -45,4 +45,6 @@ extern void worker_gate_remove_queue_student();
  */
 extern void worker_gate_insert_queue_buffet(student_t *student);
 
+extern int worker_gate_look_queue();
+
 #endif

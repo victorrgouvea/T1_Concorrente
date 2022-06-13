@@ -3,6 +3,8 @@
 #include "chef.h"
 #include "config.h"
 #include "buffet.h"
+#include "worker_gate.h"
+#include "globals.h"
 
 // Chef ações descritas:
 //
