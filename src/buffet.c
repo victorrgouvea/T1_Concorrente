@@ -7,11 +7,13 @@
 
 void *buffet_run(void *arg)
 {   
-    int all_students_entered = FALSE;
+    //int all_students_entered = FALSE;
     buffet_t *self = (buffet_t*) arg;
+
+    int num_students = globals_get_students();
     
     /*  O buffet funciona enquanto houver alunos na fila externa. */
-    while (all_students_entered == FALSE)
+    while (num_students != globals_get_passaram_pelo_buffet())
     {
         /* Cada buffet possui: Arroz, Feijão, Acompanhamento, Proteína e Salada */
         /* Máximo de porções por bacia (40 unidades). */
@@ -109,11 +111,23 @@ void buffet_next_step(buffet_t *self, student_t *student)
             int position = student->_buffet_position;
             self[student->_id_buffet].queue_left[position] = 0;
             student->_buffet_position = student->_buffet_position + 1;
+            // Atualiza a variável de quantos sairam do buffet
+            pthread_mutex_lock(globals_get_mutex_passaram());
+            int x = globals_get_passaram_pelo_buffet();
+            x += 1;
+            globals_set_passaram_pelo_buffet(x);
+            pthread_mutex_unlock(globals_get_mutex_passaram());
         }else /* Está na fila direita? */
         {   /* Zera a ultima posicao e sai do buffet*/
             int position = student->_buffet_position;
             self[student->_id_buffet].queue_right[position] = 0;
             student->_buffet_position = student->_buffet_position + 1;
+            // Atualiza a variável de quantos sairam do buffet
+            pthread_mutex_lock(globals_get_mutex_passaram());
+            int x = globals_get_passaram_pelo_buffet();
+            x += 1;
+            globals_set_passaram_pelo_buffet(x);
+            pthread_mutex_unlock((globals_get_mutex_passaram()));
         }
     }
 }

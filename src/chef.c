@@ -42,10 +42,11 @@
 
 void *chef_run()
 {
-
+    while (globals_get_buffets() == NULL);
     // verifica se ainda tem alunos na fila, para assim
     // saber se deve trabalhar ou não.
-    while (worker_gate_look_queue() == 1)
+    int num_students = globals_get_students();
+    while (num_students != globals_get_passaram_pelo_buffet())
     {   
         // checa a comida e a partir disso faz as ações
         chef_check_food();
@@ -69,7 +70,7 @@ void chef_check_food()
     buffet_t *buffets = globals_get_buffets();
     // Pegar a quantidade de buffets
     int num_buffets = globals_get_num_buffets();
-
+    
     int i, j;
     // Este primeiro for varre a lista de buffets
     for (i = 0; i < num_buffets; i++) 

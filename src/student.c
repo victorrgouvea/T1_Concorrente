@@ -25,7 +25,7 @@ void* student_run(void *arg)
 
     /* Fica no loop até que seja retirado da fila */
     while (globals_get_id_estudante_entrada() != self->_id) {}
-    printf("passou\n");
+    //printf("passou\n");
     worker_gate_insert_queue_buffet(self);
     // prints pra debug
     /*printf("%d\n", self->_id);
@@ -98,6 +98,7 @@ void student_serve(student_t *self)
             // Talvez alguma solucao com semaforo aqui??
         }
         buffet_next_step(buffet, self);
+        msleep(15000);
     }
 }
 /* 
@@ -113,7 +114,7 @@ void student_leave(student_t *self, table_t *table)
     /*
     Após o estudante terminar de comer, libera um assento da mesa em que ele estava
     */
-    msleep(5000); // Tempo que o estudante esta comendo
+    msleep(10000); // Tempo que o estudante esta comendo
 
     pthread_mutex_lock(&(table[self->_id_buffet].mutex_table));
     (table[self->_id_buffet]._empty_seats)++;

@@ -12,6 +12,8 @@ int buffets_number = 0;
 int id_estudante_entrada = 0;
 int tables_number = 0;
 int seats_per_table = 0;
+int passaram_pelo_buffet = 0;
+pthread_mutex_t mutex_passaram;
 
 void globals_set_queue(queue_t *queue)
 {
@@ -92,6 +94,21 @@ void globals_set_seats_per_table(int number)
 int globals_get_seats_per_table()
 {
     return seats_per_table;
+}
+
+void globals_set_passaram_pelo_buffet(int number)
+{
+    passaram_pelo_buffet = number;
+}
+
+int globals_get_passaram_pelo_buffet()
+{
+    return passaram_pelo_buffet;
+}
+
+pthread_mutex_t *globals_get_mutex_passaram()
+{   
+    return &mutex_passaram;
 }
 
 void tables_mutex_init(table_t *t)

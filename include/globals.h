@@ -91,11 +91,20 @@ extern void globals_set_seats_per_table(int number);
 // Retorna o numero de assentos por mesa
 extern int globals_get_seats_per_table();
 
+// Armazena o numero de pessoas que passaram pelo buffet
+extern void globals_set_passaram_pelo_buffet(int number);
+
+// Retorna o numero de pessoas que passaram pelo buffet
+extern int globals_get_passaram_pelo_buffet();
+
 // Init dos mutex das mesas
 extern void tables_mutex_init(table_t *t);
 
 // Destroy dos mutex das mesas
 extern void tables_mutex_destroy(table_t *t);
+
+// Retorna o mutex de passaram
+extern pthread_mutex_t *globals_get_mutex_passaram();
 
 // Destroy dos mutex do buffet
 //extern void buffet_mutex_destroy(buffet_t *b);
