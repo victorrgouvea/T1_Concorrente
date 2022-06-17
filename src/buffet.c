@@ -7,12 +7,15 @@
 
 void *buffet_run(void *arg)
 {   
-    //int all_students_entered = FALSE;
     buffet_t *self = (buffet_t*) arg;
-
     int num_students = globals_get_students();
     
-    /*  O buffet funciona enquanto houver alunos na fila externa. */
+    /* 
+    O buffet funciona enquanto o numero de estudantes que passaram
+    pelo buffet for diferente do numero total de estudantes
+    Quando esses numeros forem iguais, significa que todos os 
+    estudantes ja se serviram e sairam do buffet, e ele pode ser finalizado
+    */
     while (num_students != globals_get_passaram_pelo_buffet())
     {
         /* Cada buffet possui: Arroz, Feijão, Acompanhamento, Proteína e Salada */
@@ -22,7 +25,7 @@ void *buffet_run(void *arg)
         msleep(5000); /* Pode retirar este sleep quando implementar a solução! */
     }
 
-    // Apos terminar, cada buffet faz o destroy dos seus mutex
+    // Apos terminar, cada buffet faz o destroy dos seus mutex de cada bacia de comida
     for (int j = 0; j < 5; j++) {
         pthread_mutex_destroy(&(self->mutex_meal[j]));
     }
@@ -41,8 +44,8 @@ void buffet_init(buffet_t *self, int number_of_buffets)
         /* Inicia com 40 unidades de comida em cada bacia */
         for(j = 0; j < 5; j++) {
             self[i]._meal[j] = 40;
+            // Aproveito esse for para iniciar os mutex de cada bacia de comida
             pthread_mutex_init(&(self[i].mutex_meal[j]), NULL);
-            // Onde dar destroy nesses mutex ???
         }
         
         for(j= 0; j< 5; j++){
@@ -104,7 +107,16 @@ void buffet_next_step(buffet_t *self, student_t *student)
             student->_buffet_position = student->_buffet_position + 1;
         }
     }
-    else /* Caso esteja na ultima posicao do buffet */
+    /*
+    Caso esteja na ultima posicao do buffet, não devemos definir
+    a proxima posicao do estudante, ja que ela não existe, logo 
+    temos as mesma operações do if acima, tirando essa definição da
+    proxima posicao
+    Nesse caso, tambem temos que modificar a variável global de quantos
+    estudantes passaram pelo buffet, pois ele esta na ultima posicao e 
+    pronto para sair
+    */
+    else 
     {
         if (student->left_or_right == 'L')
         {   /* Zera a ultima posicao e sai do buffet*/
@@ -112,6 +124,8 @@ void buffet_next_step(buffet_t *self, student_t *student)
             self[student->_id_buffet].queue_left[position] = 0;
             student->_buffet_position = student->_buffet_position + 1;
             // Atualiza a variável de quantos sairam do buffet
+            // Utlizo um mutex, pois varios estudantes podem
+            // querer atualizar a variável ao mesmo tempo
             pthread_mutex_lock(globals_get_mutex_passaram());
             int x = globals_get_passaram_pelo_buffet();
             x += 1;
@@ -123,6 +137,8 @@ void buffet_next_step(buffet_t *self, student_t *student)
             self[student->_id_buffet].queue_right[position] = 0;
             student->_buffet_position = student->_buffet_position + 1;
             // Atualiza a variável de quantos sairam do buffet
+            // Utlizo um mutex, pois varios estudantes podem
+            // querer atualizar a variável ao mesmo tempo
             pthread_mutex_lock(globals_get_mutex_passaram());
             int x = globals_get_passaram_pelo_buffet();
             x += 1;

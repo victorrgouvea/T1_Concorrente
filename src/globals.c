@@ -125,15 +125,6 @@ void tables_mutex_destroy(table_t *t)
     }
 }
 
-/*void buffet_mutex_destroy(buffet_t *b)
-{
-    for (int i = 0; i < buffets_number; i++) {
-        for (int j = 0; j < 5; i++) {
-            pthread_mutex_destroy(&(b[i].mutex_meal[j]));
-        }
-    }
-}*/
-
 /**
  * @brief Finaliza todas as variáveis globais que ainda não foram liberadas.
  *  Se criar alguma variável global que faça uso de mallocs, lembre-se sempre de usar o free dentro

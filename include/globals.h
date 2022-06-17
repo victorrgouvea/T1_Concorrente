@@ -106,7 +106,4 @@ extern void tables_mutex_destroy(table_t *t);
 // Retorna o mutex de passaram
 extern pthread_mutex_t *globals_get_mutex_passaram();
 
-// Destroy dos mutex do buffet
-//extern void buffet_mutex_destroy(buffet_t *b);
-
 #endif

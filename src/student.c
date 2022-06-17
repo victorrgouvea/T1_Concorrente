@@ -19,21 +19,17 @@ void* student_run(void *arg)
     student_t *self = (student_t*) arg;
     table_t *tables  = globals_get_table();
     queue_t *queue = globals_get_queue();
-    //buffet_t *b = globals_get_buffets();
 
-    queue_insert(queue, self); // insere o estudante na fila
+    queue_insert(queue, self); // insere o estudante na fila da entrada
 
-    /* Fica no loop até que seja retirado da fila */
+    /*
+    Fica no loop até que seja retirado da fila.
+    Quando for, seu id vai ser igual ao que foi salvo na variável
+    global do id do estudante que foi liberado para entrar, logo
+    ele sai do loop de espera e começa as suas atividades no RU
+    */
     while (globals_get_id_estudante_entrada() != self->_id) {}
-    //printf("passou\n");
     worker_gate_insert_queue_buffet(self);
-    // prints pra debug
-    /*printf("%d\n", self->_id);
-    printf("%d\n", self->left_or_right);
-    printf("%d\n", self->_id_buffet);
-    printf("%d\n", self->_buffet_position);
-    printf("%d\n", b[self->_id_buffet].queue_left[0]);
-    printf("%d\n", b[self->_id_buffet].queue_right[0]);*/
     student_serve(self);
     student_seat(self, tables);
     student_leave(self, tables);
@@ -53,7 +49,11 @@ void student_seat(student_t *self, table_t *table)
     int achou = 0;
     while (!achou) {
         for (int i = 0; i < num_mesas; i++) {
+            // Protejo essa região crítica com um mutex para cada mesa
+            // pois varios estudantes vão tentar verificar se existe um lugar vago
             pthread_mutex_lock(&(table[i].mutex_table));
+            // Caso tenha um lugar vago, o estudante senta naquele lugar
+            // e o numero de lugares vazios é decrementado
             if (table[i]._empty_seats > 0) {
                 table[i]._empty_seats--;
                 pthread_mutex_unlock(&(table[i].mutex_table));
@@ -71,51 +71,56 @@ void student_seat(student_t *self, table_t *table)
 void student_serve(student_t *self)
 {
     /*
-    INCOMPLETA
-    Falta ver os mutex
+    Estudante fica no loop enquanto se serve
+    Quando a sua posicao for maior ou igual a 5, 
+    significa que ele ja saiu da fila do buffet.
     */
     buffet_t *buffet = globals_get_buffets();
 
-    /* posicao = 5 indica que saiu do buffet */
+    /* posicao >= 5 indica que saiu do buffet */
     while (self->_buffet_position < 5) {
         
         /* Caso queria aquela comida, se serve dela */
         if (self->_wishes[self->_buffet_position] == 1) {
             // Espera a reposicao caso nao tenha comida
-            while (!buffet[self->_id_buffet]._meal[self->_buffet_position]) {} // Espera a reposicao caso nao tenha comida
+            while (!buffet[self->_id_buffet]._meal[self->_buffet_position]) {}
+            // Utilizo um mutex para evitar que os estudantes da fila da esquerda
+            // e da direita se sirvam da mesma comida ao mesmo tempo
             pthread_mutex_lock(&(buffet[self->_id_buffet].mutex_meal[self->_buffet_position]));
             buffet[self->_id_buffet]._meal[self->_buffet_position] -= 1;  // Pega a comida
             pthread_mutex_unlock(&(buffet[self->_id_buffet].mutex_meal[self->_buffet_position]));
         }
+        // Caso ainda tenha mais uma posicao para andar e está na fila esquerda
         if (self->left_or_right == 'L' && self->_buffet_position < 4) {
             // Espera ate a proxima posicao da fila ser liberada
             while (buffet[self->_id_buffet].queue_left[(self->_buffet_position)+1]) {}
-            // Talvez alguma solucao com semaforo aqui??
-        } 
+        }
+        // Caso ainda tenha mais uma posicao para andar e está na fila direita
         else if (self->left_or_right == 'R' && self->_buffet_position < 4) {
             // Espera ate a proxima posicao da fila ser liberada
             while (buffet[self->_id_buffet].queue_right[(self->_buffet_position)+1]) {}
-            // Talvez alguma solucao com semaforo aqui??
         }
-        buffet_next_step(buffet, self);
+        buffet_next_step(buffet, self); // vai para a próxima posicao do buffet
+        
+        // Utilizo esse sleep para sincronizar as ações dessa função com os prints dos logs
+        // Sem o sleep, os estudantes entram e saem da fila do buffet muito rapidamente
+        // e não é possível ve-los no print das posicoes da fila
+        // O sleep tambem acaba sendo uma simulação do tempo que o estudante gasta para
+        // se servir dos alimentos
         msleep(15000);
     }
 }
-/* 
-esta na fila?
-verifica se quer a comida daquela posicao ou nao. se nao quiser, passa p/ a prox.
-caso queira, verifica se tem. se tiver, pega. se nao tiver, espera
-depois de pegar a comida, passa para a proxima posicao
-quando passar da ultima posicao, vai sentar para comer
-*/
 
 void student_leave(student_t *self, table_t *table)
 {
+    msleep(20000); // Tempo que o estudante esta comendo
+
     /*
     Após o estudante terminar de comer, libera um assento da mesa em que ele estava
+    incrementando o valor da variável de lugares livres
+    Utlizo o mutex da determinada mesa para evitar que vários estudantes tentem
+    atualizar a variável ao mesmo tempo
     */
-    msleep(10000); // Tempo que o estudante esta comendo
-
     pthread_mutex_lock(&(table[self->_id_buffet].mutex_table));
     (table[self->_id_buffet]._empty_seats)++;
     pthread_mutex_unlock(&(table[self->_id_buffet].mutex_table));

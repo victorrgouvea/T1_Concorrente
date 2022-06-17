@@ -9,6 +9,8 @@
 
 table_t *table_init(int number_of_tables, int seats_per_table)
 {
+    // Mudanças autorizadas para tornar as variáveis
+    // de numero de mesas e numero de lugares globais:
     globals_set_tables_number(number_of_tables);
     globals_set_seats_per_table(seats_per_table);
     
