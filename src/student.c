@@ -32,6 +32,7 @@ void* student_run(void *arg)
     worker_gate_insert_queue_buffet(self);
     student_serve(self);
     student_seat(self, tables);
+    msleep(30000); // Tempo que o estudante esta comendo
     student_leave(self, tables);
 
     pthread_exit(NULL);
@@ -63,9 +64,9 @@ void student_seat(student_t *self, table_t *table)
                 achou = 1;
                 break;
             }
+            pthread_mutex_unlock(&(table[i].mutex_table));
         }
     }
-
 }
 
 void student_serve(student_t *self)
@@ -113,8 +114,6 @@ void student_serve(student_t *self)
 
 void student_leave(student_t *self, table_t *table)
 {
-    msleep(20000); // Tempo que o estudante esta comendo
-
     /*
     Após o estudante terminar de comer, libera um assento da mesa em que ele estava
     incrementando o valor da variável de lugares livres
